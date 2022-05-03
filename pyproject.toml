@@ -7,10 +7,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pybit = "^2.1.1"
+python-binance = "^1.0.16"
+pandas = "^1.4.2"
+mplfinance = "^0.12.8-beta.9"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.3.0"
+ipykernel = "^6.13.0"
 
 [build-system]
 requires = ["poetry-core"]
