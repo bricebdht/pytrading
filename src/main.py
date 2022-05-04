@@ -1,15 +1,12 @@
 from datetime import datetime, timedelta
 
-import mplfinance as mpf
 from backtesting import Backtest
-from backtesting.test import GOOG
 from binance.client import Client
 from formatters.binance_formatter import format_binance_data
 from strategies.rsi_adx import RsiAdx
-from strategies.sma_cross import SmaCross
 
 client = Client()
-from_date = datetime.now() - timedelta(days=20)
+from_date = datetime.now() - timedelta(days=200)
 candles = client.get_historical_klines(
     symbol="BTCUSDT",
     interval=Client.KLINE_INTERVAL_30MINUTE,

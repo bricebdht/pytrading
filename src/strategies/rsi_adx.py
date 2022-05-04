@@ -1,5 +1,4 @@
-import pandas as pd
-from backtesting.lib import SignalStrategy, TrailingStrategy, crossover
+from backtesting.lib import TrailingStrategy, crossover
 from backtesting.test import SMA
 from talib import ADX, ATR, EMA, RSI
 
