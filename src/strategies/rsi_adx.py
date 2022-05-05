@@ -20,7 +20,7 @@ class RsiAdx(TrailingStrategy):
             and self.data.Close > self.ema1
         ):
             self.buy(
-                tp=self.data.Close[-1] + self.atr[-1] * 1.5,
+                tp=self.data.Close[-1] + self.atr[-1] * 3,
                 sl=self.data.Close[-1] - self.atr[-1] * 2,
             )
         elif (
@@ -30,6 +30,6 @@ class RsiAdx(TrailingStrategy):
             and self.data.Close < self.ema1
         ):
             self.sell(
-                tp=self.data.Close[-1] - self.atr[-1] * 6.5,
+                tp=self.data.Close[-1] - self.atr[-1] * 4,
                 sl=self.data.Close[-1] + self.atr[-1] * 2,
             )
