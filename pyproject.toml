@@ -13,6 +13,8 @@ pandas = "^1.4.2"
 mplfinance = "^0.12.8-beta.9"
 Backtesting = "^0.3.3"
 TA-Lib = "^0.4.24"
+ccxt = "^1.81.72"
+schedule = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

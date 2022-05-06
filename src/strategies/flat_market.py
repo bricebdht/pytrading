@@ -29,12 +29,12 @@ class FlatMarket(TrailingStrategy):
 
         if series_max - series_min < self.data.Close[-1] * 0.7 / 100:
             self.buy(
-                limit=self.data.Close[-1] + self.atr[-1] * 2,
+                limit=self.data.Close[-1] + self.atr[-1] * 4,
                 tp=self.data.Close[-1] + self.atr[-1] * 3,
                 sl=self.data.Close[-1] - self.atr[-1],
             )
             self.sell(
-                limit=self.data.Close[-1] - self.atr[-1] * 2,
+                limit=self.data.Close[-1] - self.atr[-1] * 4,
                 tp=self.data.Close[-1] - self.atr[-1] * 3,
                 sl=self.data.Close[-1] + self.atr[-1],
             )
