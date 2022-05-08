@@ -17,9 +17,11 @@ ccxt = "^1.81.72"
 schedule = "^1.1.0"
 
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
 black = "^22.3.0"
 ipykernel = "^6.13.0"
+pylint = "^2.13.8"
+notebook = "^6.4.11"
 
 [build-system]
 requires = ["poetry-core"]
