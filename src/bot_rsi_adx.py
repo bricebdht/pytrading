@@ -63,6 +63,7 @@ def run_bot():
         symbol=symbol,
         interval=Client.KLINE_INTERVAL_1MINUTE,
         start_str=from_date.isoformat(),
+        klines_type="FUTURES",
     )
 
     chart_data = format_binance_data(candles)
