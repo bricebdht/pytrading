@@ -49,6 +49,10 @@ def create_order_with_sl_and_tp(
         price=tp_price,
         stopPrice=tp_price,
     )
+    print(f"----- {side} order created -----")
+    print(f"Price: {price}")
+    print(f"Stop loss: {sl_price}")
+    print(f"Take profit: {tp_price}")
 
 
 def run_bot():
