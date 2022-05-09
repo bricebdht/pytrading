@@ -1,8 +1,6 @@
 import time
 from datetime import datetime, timedelta
 
-import ccxt
-import pandas as pd
 import schedule
 from binance.client import Client
 from config import BINANCE_API_KEY, BINANCE_API_SECRET
@@ -10,10 +8,53 @@ from formatters.binance_formatter import format_binance_data
 from talib import ADX, ATR, EMA, RSI, SMA
 
 
+def create_order_with_sl_and_tp(
+    client: Client,
+    side: str,
+    quantity: float,
+    price: float,
+    sl_price: float,
+    tp_price: float,
+    symbol="BTCUSDT",
+):
+    # ORDER
+    client.create_test_order(
+        symbol=symbol,
+        side=side,
+        type="limit",
+        timeInForce="GTC",
+        quantity=quantity,
+        price=price,
+    )
+    # STOP LOSS
+    close_position_side = "SELL" if side == "BUY" else "SELL"
+    client.futures_create_order(
+        symbol=symbol,
+        side=close_position_side,
+        type="STOP",
+        timeInForce="GTC",
+        quantity=quantity,
+        reduceOnly=True,
+        price=sl_price,
+        stopPrice=sl_price,
+    )
+    # TAKE PROFIT
+    client.futures_create_order(
+        symbol=symbol,
+        side=close_position_side,
+        type="TAKE_PROFIT",
+        timeInForce="GTC",
+        quantity=quantity,
+        reduceOnly=True,
+        price=tp_price,
+        stopPrice=tp_price,
+    )
+
+
 def run_bot():
     symbol = "BTCUSDT"
     client = Client(api_key=BINANCE_API_KEY, api_secret=BINANCE_API_SECRET)
-    from_date = datetime.now() - timedelta(days=20)
+    from_date = datetime.now() - timedelta(days=2)
     candles = client.get_historical_klines(
         symbol=symbol,
         interval=Client.KLINE_INTERVAL_1MINUTE,
@@ -28,55 +69,40 @@ def run_bot():
     ema1 = EMA(close, 200)
     rsi = RSI(close)
     adx = ADX(high, low, close)
-    adxMA = SMA(adx, 14)
+    adxMa = SMA(adx, 14)
     atr = ATR(high, low, close, 14)
 
     last_ema1 = ema1[-1]
     last_rsi = rsi[-1]
     last_adx = adx[-1]
-    last_adx_ma = adxMA[-1]
+    last_adx_ma = adxMa[-1]
     last_close = close[-1]
 
-    order = client.create_test_order(
-        symbol=symbol,
-        side="BUY",
-        type="limit",
-        timeInForce="GTC",
-        quantity=0.002,
-        price=last_close + 50,
-    )
-    print(order)
-    # if (
-    #     last_ema1 < last_close
-    #     and last_adx > 20
-    #     and last_adx > last_adx_ma
-    #     and last_rsi > 75
-    # ):
-    #     print("BUY")
-    #     # client.create_test_order(
-    #     #     symbol,
-    #     #     "BUY",
-    #     #     "limit",
-    #     #     "GTC",
-    #     #     0.002,
-    #     #     close + 50,
-    #     # )
-    # elif (
-    #     last_ema1 > last_close
-    #     and last_adx > 20
-    #     and last_adx > last_adx_ma
-    #     and last_rsi < 25
-    # ):
-    #     print("SELL")
-
-    #     # client.create_test_order(
-    #     #     symbol,
-    #     #     "SELL",
-    #     #     "limit",
-    #     #     "GTC",
-    #     #     0.002,
-    #     #     close - 50,
-    #     # )
+    order_price = close[0]
+    if (
+        last_ema1 < last_close
+        and last_adx > 20
+        and last_adx > last_adx_ma
+        and last_rsi > 75
+    ):
+        print("BUY")
+        sl_price = order_price - 2 * atr[0]
+        tp_price = order_price + 1.5 * atr[0]
+        create_order_with_sl_and_tp(
+            client, "BUY", 0.001, order_price, sl_price, tp_price
+        )
+    elif (
+        last_ema1 > last_close
+        and last_adx > 20
+        and last_adx > last_adx_ma
+        and last_rsi < 25
+    ):
+        print("SELL")
+        sl_price = order_price + 2 * atr[0]
+        tp_price = order_price - 1.5 * atr[0]
+        create_order_with_sl_and_tp(
+            client, "SELL", 0.001, order_price, sl_price, tp_price
+        )
 
 
 schedule.every(10).seconds.do(run_bot)
