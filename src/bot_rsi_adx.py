@@ -73,13 +73,13 @@ def run_bot():
     ema1 = EMA(close, 200)
     rsi = RSI(close)
     adx = ADX(high, low, close)
-    adxMa = SMA(adx, 14)
+    adx_ma = SMA(adx, 14)
     atr = ATR(high, low, close, 14)
 
     last_ema1 = ema1[-1]
     last_rsi = rsi[-1]
     last_adx = adx[-1]
-    last_adx_ma = adxMa[-1]
+    last_adx_ma = adx_ma[-1]
     last_close = close[-1]
 
     order_price = close[0]
