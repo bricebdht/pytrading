@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 import schedule
 from binance.client import Client
+from binance.enums import HistoricalKlinesType
 from config import BINANCE_API_KEY, BINANCE_API_SECRET
 from formatters.binance_formatter import format_binance_data
 from talib import ADX, ATR, EMA, RSI, SMA
@@ -101,7 +102,7 @@ def run_bot():
         symbol=symbol,
         interval=TIMEFRAME,
         start_str=from_date.isoformat(),
-        klines_type="FUTURES",
+        klines_type=HistoricalKlinesType.FUTURES,
     )
 
     chart_data = format_binance_data(candles)
@@ -115,12 +116,14 @@ def run_bot():
     adx_ma = SMA(adx, 14)
     atr = ATR(high, low, close, OPTIMAL_PARAMETERS[TIMEFRAME]["atr_length"])
 
-    last_ema1 = ema1[-1]
-    last_rsi = rsi[-1]
-    last_adx = adx[-1]
-    last_adx_ma = adx_ma[-1]
-    last_close = close[-1]
+    last_ema1 = ema1[-2]
+    last_rsi = rsi[-2]
+    last_adx = adx[-2]
+    last_adx_ma = adx_ma[-2]
+    last_atr = atr[-2]
+    last_close = close[-2]
 
+    current_price = close[-1]
     if (
         last_ema1 < last_close
         and last_adx > 20
@@ -129,16 +132,24 @@ def run_bot():
     ):
         print("BUY")
         sl_price = (
-            last_close - OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"] * atr[0]
+            current_price
+            - OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"] * last_atr
         )
         tp_price = (
-            last_close
+            current_price
             + OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"]
             * OPTIMAL_PARAMETERS[TIMEFRAME]["long_rr_ratio"]
-            * atr[-1]
+            * last_atr
         )
         create_order_with_sl_and_tp(
-            client, "BUY", 0.001, last_close, sl_price, tp_price
+            client,
+            "BUY",
+            0.001,
+            current_price
+            + last_atr
+            / 2,  # Set starting price above current price to increase the chance to see the order filled
+            sl_price,
+            tp_price,
         )
     elif (
         last_ema1 > last_close
@@ -148,16 +159,24 @@ def run_bot():
     ):
         print("SELL")
         sl_price = (
-            last_close + OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"] * atr[0]
+            current_price
+            + OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"] * last_atr
         )
         tp_price = (
-            last_close
+            current_price
             - OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"]
             * OPTIMAL_PARAMETERS[TIMEFRAME]["short_rr_ratio"]
-            * atr[-1]
+            * last_atr
         )
         create_order_with_sl_and_tp(
-            client, "SELL", 0.001, last_close, sl_price, tp_price
+            client,
+            "SELL",
+            0.001,
+            current_price
+            - last_atr
+            / 2,  # Set starting price below current price to increase the chance to see the order filled
+            sl_price,
+            tp_price,
         )
 
 
