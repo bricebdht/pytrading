@@ -55,9 +55,18 @@ def create_order_with_sl_and_tp(
     print(f"Take profit: {tp_price}")
 
 
+def clean_open_orders(client: Client, symbol="BTCUSDT"):
+    open_orders = client.futures_get_open_orders(symbol=symbol)
+    if len(open_orders) == 1 and open_orders[0]["type"] in ["STOP", "TAKE_PROFIT"]:
+        print("----- Canceling order -----")
+        print(open_orders[0])
+        client.futures_cancel_all_open_orders(symbol=symbol)
+
+
 def run_bot():
     symbol = "BTCUSDT"
     client = Client(api_key=BINANCE_API_KEY, api_secret=BINANCE_API_SECRET)
+    clean_open_orders(client)
     from_date = datetime.now() - timedelta(days=2)
     candles = client.get_historical_klines(
         symbol=symbol,
