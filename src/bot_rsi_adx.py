@@ -97,7 +97,7 @@ def run_bot():
     symbol = "BTCUSDT"
     client = Client(api_key=BINANCE_API_KEY, api_secret=BINANCE_API_SECRET)
     clean_open_orders(client)
-    from_date = datetime.now() - timedelta(days=2)
+    from_date = datetime.now() - timedelta(days=6)
     candles = client.get_historical_klines(
         symbol=symbol,
         interval=TIMEFRAME,

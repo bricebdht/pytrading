@@ -35,7 +35,7 @@ poetry run python3 -u src/bot_rsi_adx.py > bot.log
 Run bot on VM:
 
 ```sh
-ssh root@<vm_ip> -- cd /home/pytrading && poetry run src/bot_rsi_adx.py
+ssh root@<vm_ip> -- cd /home/pytrading && poetry run python3 -u src/bot_rsi_adx.py > bot.log &
 ```
 
 ## To do:
