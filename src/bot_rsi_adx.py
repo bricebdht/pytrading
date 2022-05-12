@@ -148,11 +148,7 @@ def run_bot():
         print(
             f"{now.strftime('%m/%d/%YT%H:%M:%S')} - I'm alive. Current price: {current_price}"
         )
-        telegram_send.send(
-            messages=[
-                f"{now.strftime('%m/%d/%YT%H:%M:%S')} - I'm alive. Current price: {current_price}"
-            ]
-        )
+        telegram_send.send(messages=[f"I'm alive. Current price: {current_price}"])
     if (
         last_ema1 < last_close
         and last_adx > 20
@@ -160,7 +156,7 @@ def run_bot():
         and last_rsi > 75
     ):
         print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - BUY")
-        telegram_send.send(messages=[f"{now.strftime('%m/%d/%YT%H:%M:%S')} - BUY"])
+        telegram_send.send(messages=["BUY"])
         sl_price = (
             current_price
             - OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"] * last_atr
@@ -188,7 +184,7 @@ def run_bot():
         and last_rsi < 25
     ):
         print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - SELL")
-        telegram_send.send(messages=[f"{now.strftime('%m/%d/%YT%H:%M:%S')} - SELL"])
+        telegram_send.send(messages=["SELL"])
         sl_price = (
             current_price
             + OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"] * last_atr
