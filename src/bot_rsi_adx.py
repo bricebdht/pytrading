@@ -11,9 +11,9 @@ from talib import ADX, ATR, EMA, RSI, SMA
 OPTIMAL_PARAMETERS = {
     "5m": {
         "interval": Client.KLINE_INTERVAL_5MINUTE,
-        "atr_length": 6,
-        "long_sl_multiplier": 1,
-        "long_rr_ratio": 4,
+        "atr_length": 8,
+        "long_sl_multiplier": 2,
+        "long_rr_ratio": 2,
         "short_sl_multiplier": 2,
         "short_rr_ratio": 2,
     },
@@ -35,7 +35,7 @@ OPTIMAL_PARAMETERS = {
     },
 }
 
-TIMEFRAME = "5m"
+TIMEFRAME = "30m"
 
 
 def create_order_with_sl_and_tp(
@@ -124,13 +124,21 @@ def run_bot():
     last_close = close[-2]
 
     current_price = close[-1]
+
+    now = datetime.now()
+    minutes = int(now.strftime("%M"))
+    seconds = int(now.strftime("%S"))
+    if minutes % 15 == 0 and seconds <= 15:
+        print(
+            f"{now.strftime('%m/%d/%YT%H:%M:%S')} - I'm alive. Current price: {current_price}"
+        )
     if (
         last_ema1 < last_close
         and last_adx > 20
         and last_adx > last_adx_ma
         and last_rsi > 75
     ):
-        print("BUY")
+        print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - BUY")
         sl_price = (
             current_price
             - OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"] * last_atr
@@ -157,7 +165,7 @@ def run_bot():
         and last_adx > last_adx_ma
         and last_rsi < 25
     ):
-        print("SELL")
+        print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - SELL")
         sl_price = (
             current_price
             + OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"] * last_atr

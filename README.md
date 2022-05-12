@@ -26,6 +26,12 @@ Run bot with:
 poetry run python3 src/bot_rsi_adx.py
 ```
 
+Run and write output in a file:
+
+```sh
+poetry run python3 -u src/bot_rsi_adx.py > bot.log
+```
+
 Run bot on VM:
 
 ```sh
