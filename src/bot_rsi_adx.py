@@ -144,7 +144,7 @@ def run_bot():
     now = datetime.now()
     minutes = int(now.strftime("%M"))
     seconds = int(now.strftime("%S"))
-    if minutes % 15 == 0 and seconds <= 15:
+    if minutes % 15 == 0 and seconds <= 12:
         print(
             f"{now.strftime('%m/%d/%YT%H:%M:%S')} - I'm alive. Current price: {current_price}"
         )
