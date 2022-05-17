@@ -38,7 +38,8 @@ Run bot on VM:
 ssh root@<vm_ip> -- cd /home/pytrading && poetry run python3 -u src/bot_rsi_adx.py > bot.log &
 ```
 
-## To do:
+## Setup Telegram bot
 
-- Add Telegram bot when orders are sent, also send a message every N minutes to make sure the bot is alive
-- Script to deploy quickly when making new changes
+```sh
+poetry install telegram-send && telegram-send --configure
+```

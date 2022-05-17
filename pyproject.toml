@@ -15,6 +15,7 @@ Backtesting = "^0.3.3"
 TA-Lib = "^0.4.24"
 ccxt = "^1.81.72"
 schedule = "^1.1.0"
+telegram-send = "^0.33.1"
 
 
 [tool.poetry.dev-dependencies]

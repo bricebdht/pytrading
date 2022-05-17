@@ -1,7 +1,9 @@
 import time
 from datetime import datetime, timedelta
+from email import message
 
 import schedule
+import telegram_send
 from binance.client import Client
 from binance.enums import HistoricalKlinesType
 from config import BINANCE_API_KEY, BINANCE_API_SECRET
@@ -83,6 +85,14 @@ def create_order_with_sl_and_tp(
     print(f"Price: {price}")
     print(f"Stop loss: {sl_price}")
     print(f"Take profit: {tp_price}")
+    telegram_send.send(
+        messages=[
+            f"----- {side} order created -----",
+            f"Price: {price}",
+            f"Stop loss: {sl_price}",
+            f"Take profit: {tp_price}",
+        ]
+    )
 
 
 def clean_open_orders(client: Client, symbol="BTCUSDT"):
@@ -90,6 +100,12 @@ def clean_open_orders(client: Client, symbol="BTCUSDT"):
     if len(open_orders) == 1 and open_orders[0]["type"] in ["STOP", "TAKE_PROFIT"]:
         print("----- Canceling order -----")
         print(open_orders[0])
+        telegram_send.send(
+            messages=[
+                "----- Canceling order -----",
+                open_orders[0],
+            ]
+        )
         client.futures_cancel_all_open_orders(symbol=symbol)
 
 
@@ -128,10 +144,11 @@ def run_bot():
     now = datetime.now()
     minutes = int(now.strftime("%M"))
     seconds = int(now.strftime("%S"))
-    if minutes % 15 == 0 and seconds <= 15:
+    if minutes % 15 == 0 and seconds <= 12:
         print(
             f"{now.strftime('%m/%d/%YT%H:%M:%S')} - I'm alive. Current price: {current_price}"
         )
+        telegram_send.send(messages=[f"I'm alive. Current price: {current_price}"])
     if (
         last_ema1 < last_close
         and last_adx > 20
@@ -139,6 +156,7 @@ def run_bot():
         and last_rsi > 75
     ):
         print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - BUY")
+        telegram_send.send(messages=["BUY"])
         sl_price = (
             current_price
             - OPTIMAL_PARAMETERS[TIMEFRAME]["long_sl_multiplier"] * last_atr
@@ -166,6 +184,7 @@ def run_bot():
         and last_rsi < 25
     ):
         print(f"{now.strftime('%m/%d/%YT%H:%M:%S')} - SELL")
+        telegram_send.send(messages=["SELL"])
         sl_price = (
             current_price
             + OPTIMAL_PARAMETERS[TIMEFRAME]["short_sl_multiplier"] * last_atr
