@@ -18,6 +18,16 @@ wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
   && sudo rm -rf ta-lib/
 ```
 
+## Clean VM and send project
+
+```sh
+ssh root@<vm_ip> -- rm -rf pytrading
+```
+
+```sh
+scp -r pytrading root@<vm_ip>:
+```
+
 ## Running the bot
 
 Run bot with:
