@@ -2,54 +2,15 @@
 
 ## Prerequisites
 
-Install ta-lib on your machine;
+It's better to use a bigger VM for the setup (4vCPUs)
 
-For Linux run:
+1. Load code to VM by running `./update-vm.sh`
+2. Setup the VM with `ssh root@165.232.86.215 -- pytrading/setup-vm.sh`
+3. Configure Telegram bot `poetry install telegram-send && telegram-send --configure`
 
-```sh
-wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
-  && sudo tar -xzf ta-lib-0.4.0-src.tar.gz \
-  && sudo rm ta-lib-0.4.0-src.tar.gz \
-  && cd ta-lib/ \
-  && sudo ./configure --prefix=/usr \
-  && sudo make \
-  && sudo make install \
-  && cd ~ \
-  && sudo rm -rf ta-lib/
-```
+## Run the bot on VM
 
-## Clean VM and send project
-
-```sh
-ssh root@<vm_ip> -- rm -rf pytrading
-```
-
-```sh
-scp -r pytrading root@<vm_ip>:
-```
-
-## Running the bot
-
-Run bot with:
-
-```sh
-poetry run python3 src/bot_rsi_adx.py
-```
-
-Run and write output in a file:
-
-```sh
-poetry run python3 -u src/bot_rsi_adx.py > bot.log
-```
-
-Run bot on VM:
-
-```sh
-ssh root@<vm_ip> -- cd /home/pytrading && poetry run python3 -u src/bot_rsi_adx.py > bot.log &
-```
-
-## Setup Telegram bot
-
-```sh
-poetry install telegram-send && telegram-send --configure
-```
+1. `screen`
+2. `cd pytrading && poetry run python3 -u src/bot_rsi_adx.py > bot.log &`
+3. Disconnect from screen with `CTRL + A + D`.
+4. Reconnect to the screen session with the command `screen -r`
