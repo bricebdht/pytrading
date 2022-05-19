@@ -1,7 +1,7 @@
 import time
 from datetime import datetime, timedelta
-from email import message
 
+import requests
 import schedule
 import telegram_send
 from binance.client import Client
@@ -96,7 +96,10 @@ def create_order_with_sl_and_tp(
 
 
 def clean_open_orders(client: Client, symbol="BTCUSDT"):
-    open_orders = client.futures_get_open_orders(symbol=symbol)
+    try:
+        open_orders = client.futures_get_open_orders(symbol=symbol)
+    except requests.exceptions.Timeout:
+        print("----- Request timeout: futures_get_open_orders -----")
     if len(open_orders) == 1 and open_orders[0]["type"] in ["STOP", "TAKE_PROFIT"]:
         print("----- Canceling order -----")
         print(open_orders[0])
@@ -111,15 +114,22 @@ def clean_open_orders(client: Client, symbol="BTCUSDT"):
 
 def run_bot():
     symbol = "BTCUSDT"
-    client = Client(api_key=BINANCE_API_KEY, api_secret=BINANCE_API_SECRET)
+    client = Client(
+        api_key=BINANCE_API_KEY,
+        api_secret=BINANCE_API_SECRET,
+        requests_params={"timeout": 20},
+    )
     clean_open_orders(client)
     from_date = datetime.now() - timedelta(days=6)
-    candles = client.get_historical_klines(
-        symbol=symbol,
-        interval=TIMEFRAME,
-        start_str=from_date.isoformat(),
-        klines_type=HistoricalKlinesType.FUTURES,
-    )
+    try:
+        candles = client.get_historical_klines(
+            symbol=symbol,
+            interval=TIMEFRAME,
+            start_str=from_date.isoformat(),
+            klines_type=HistoricalKlinesType.FUTURES,
+        )
+    except requests.exceptions.Timeout:
+        print("----- Request timeout: get_historical_klines -----")
 
     chart_data = format_binance_data(candles)
     close = chart_data["Close"]
