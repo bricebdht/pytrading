@@ -49,11 +49,14 @@ def create_order_with_sl_and_tp(
     tp_price: float,
     symbol="BTCUSDT",
 ):
+    price = round(price)
+    sl_price = round(sl_price)
+    tp_price = round(tp_price)
     # ORDER
-    client.create_test_order(
+    client.futures_create_order(
         symbol=symbol,
         side=side,
-        type="limit",
+        type="LIMIT",
         timeInForce="GTC",
         quantity=quantity,
         price=price,
